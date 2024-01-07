@@ -1,0 +1,14 @@
+body.day {
+  color: #f90;
+  background: #fff;
+}
+
+body.dark {
+  color: #eee;
+  background: #333;
+}
+
+body.Christmas {
+  color: rgb(226, 43, 235);
+  background-image: url(../resource/background/Christmas.jpeg);
+}

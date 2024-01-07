@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="./js/skin.js"></script>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <title>
+        Login
+    </title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/login.css">
+    <style>
+    </style>
+</head>
+
+<body>
+
+    <form action="" class="login">
+        <p>Login</p>
+        <input id="email" type="text" placeholder="EMAIL">
+        <input id="password" type="password" placeholder="密码">
+        <button onclick="send()">登录</button>
+    </form>
+
+
+
+</body>
+
+<script>
+
+function $ajax({
+    method = "get",
+    url,
+    data,
+    success,
+    error
+}) {
+    //1、创建ajax对象
+    var xhr = null;
+    try {
+        xhr = new XMLHttpRequest();
+    } catch (error) {
+        xhr = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+
+    xhr.open(method, url, true);
+
+    if (method == "get") {
+        xhr.send();
+    } else {
+        //必须在send方法之前，去设置请求的格式
+        xhr.setRequestHeader("content-type", "application/json");
+        xhr.send(data);
+    }
+    //4、等待数据响应  
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            //判断本次下载的状态码都是多少
+            if (xhr.status == 200) {
+
+                if (success) {
+                    // alert(2);
+                    success(xhr.responseText);
+                }
+            } else {
+                if (error) {
+                    error("Error:" + xhr.status);
+                }
+            }
+        }
+    }
+}
+
+function send() {
+    email = document.getElementById('email').value;
+    password = document.getElementById('password').value;
+
+    xhr = new XMLHttpRequest();
+
+    $.ajax({
+        type: "POST",
+        url: 'http://121.37.67.126:3001/api/login',
+        data: JSON.stringify({"username": email, "password": password}),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(data){
+            alert("登录成功，本次登录的token为：" + data["token"]);
+        },
+        error: function(errMsg) {
+            alert(errMsg["responseText"]);
+        }
+    });
+
+    /*
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            //判断本次下载的状态码都是多少
+            if (xhr.status == 200) {
+
+                alert(xhr.responseText);
+            } else {
+                alert("Error:" + xhr.status);
+            }
+        }
+    }
+
+    xhr.open('post', 'http://121.37.67.126:3001/api/login');
+
+    xhr.setRequestHeader("content-type", "application/json");
+
+    xhr.send("{\"username\":\"" + email + "\",\"password\":\"" + password + "\"}")
+    */
+
+}
+
+</script>
+
+</html>

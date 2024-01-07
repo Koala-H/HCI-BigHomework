@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="./js/skin.js"></script>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <title>
+        Register
+    </title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/login.css">
+    <style>
+        .code {
+            width: 120px;
+            height: 50px;
+            background-color: pink;
+            display: inline-block;
+            text-align: center;
+            line-height: 50px;
+            letter-spacing: 10px;
+            font-style: italic;
+            /*使鼠标放在上面的时候将鼠标的图标变成一个小手*/
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body onload="createCode()">
+
+    <form action="" class="register">
+        <p>Register</p>
+        <input id="email" type="text" placeholder="请输入邮箱">
+        <input id="password" type="password" placeholder="请输入密码">
+        <input id="againpassword" type="password" placeholder="请再次确认密码">
+        <div class="code" onclick="createCode()"></div>
+        <a href="#" onclick="createCode()">看不清换一张</a><br>
+        <input id="checkcode" type="text" placeholder="请输入验证码">
+        <button>手机号注册</button>
+        <button onclick="send()">注册</button>
+    </form>
+
+
+
+</body>
+
+<script>
+
+// 生成验证码的函数
+var code;
+function createCode() {
+    code = "";            //验证码的初始值
+    var codeLength = 4;   //验证码的长度
+    // 验证码的组成成分
+    var codeChars = new Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f',
+        'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w',
+        'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+        'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
+    for (var i = 0; i < codeLength; i++) {
+        // 获取随机数：下标
+        var charNum = Math.floor(Math.random() * 62);
+        // 验证码
+        code += codeChars[charNum];
+    }
+    document.getElementsByClassName("code")[0].innerText = code;
+}
+// 验证验证码的函数
+function checkCode() {
+    // 获取输入的值
+    var inputCode = document.getElementById("checkcode").value;
+    // 判断验证码是否输入正确
+    if (inputCode.length <= 0) {
+        alert("请输入验证码！");
+    } else if (inputCode.toUpperCase() != code.toUpperCase()) {
+        alert("验证码输入有误！");
+        // 更新验证码
+        createCode();
+        // 清空输入框
+        document.getElementsByTagName("input")[0].value = "";
+        return false;
+    } else {
+        return true;
+    }
+}
+
+</script>
+<script>
+function send() {
+    email = document.getElementById('email').value;
+    password = document.getElementById('password').value;
+    againpassword = document.getElementById('againpassword').value;
+    checkcode = document.getElementById('checkcode').value;
+
+    var emailRegex = /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/;
+
+    if (email === "") {
+        alert("邮箱不能为空，请重试。");
+        return;
+    }
+    if (!emailRegex.test(email)) {
+        alert("请输入合法邮箱！");
+        return;
+    }
+
+
+    if (password === "") {
+        alert("密码不能为空，请重试。");
+        return;
+    }
+    if (password !== againpassword) {
+        alert("密码与确认密码不同，请再次确认密码后重新输入。");
+        return;
+    }
+
+    let hardPassword = new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})');
+
+    if (!hardPassword.test(password)) {
+        alert("密码过于简单，请用一个更复杂的密码。密码应符合下面要求：1、至少8个字符；2、至少一个小写字母；3、至少一个大写字母；4、至少一个数字；5、至少一个特殊字符。");
+        return;
+    }
+
+    if (!checkCode()) {
+        return;
+    }
+
+    xhr = new XMLHttpRequest();
+
+    $.ajax({
+        type: "POST",
+        url: 'http://121.37.67.126:3001/api/register',
+        data: JSON.stringify({"username": email, "password": password}),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(data){
+            alert(JSON.stringify(data));
+        },
+        error: function(errMsg) {
+            alert(errMsg["responseText"]);
+        }
+    });
+}
+
+</script>
+
+</html>
